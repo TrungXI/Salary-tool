@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --surface2: #f3f2ef;
+  --border: #e5e4e0;
+  --text: #1a1916;
+  --muted: #6b6a66;
+  --accent: #1e6b45;
+  --accent-light: #e8f4ed;
+  --accent-mid: #2d8a5a;
+  --warn: #92400e;
+  --warn-light: #fef3c7;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; margin: 0; }
+
+input, select {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 15px; background: var(--surface);
+  color: var(--text); outline: none; transition: border-color 0.15s;
+}
+input:focus, select:focus { border-color: var(--accent); }
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
