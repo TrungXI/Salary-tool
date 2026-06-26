@@ -95,10 +95,15 @@ const DEPENDANT_DEDUCTION = 6_200_000   // Mỗi người phụ thuộc: 6.2 tri
 // Mức trần đóng BHXH/BHYT: 20 × mức tham chiếu (≠ lương tối thiểu vùng)
 // Từ 01/01/2026 đến 30/06/2026: mức tham chiếu = 2,340,000 → trần = 46,800,000
 // Từ 01/07/2026: mức tham chiếu = 2,530,000 → trần = 50,600,000 (Nghị định 161/2026 — VERIFY)
-// Hiện tại (2026-06-27): dùng 46,800,000
-const BHXH_REFERENCE_LEVEL = 2_340_000  // mức tham chiếu hiện tại
+// Logic tự động chuyển theo ngày — xem getBhxhReferenceLevel()
+function getBhxhReferenceLevel(): number {
+  const now = new Date()
+  const cutover = new Date('2026-07-01T00:00:00+07:00') // Vietnam timezone
+  return now >= cutover ? 2_530_000 : 2_340_000
+}
+
 const MAX_BHXH_MONTHS = 20
-const MAX_BHXH_BASE = BHXH_REFERENCE_LEVEL * MAX_BHXH_MONTHS // = 46,800,000
+const MAX_BHXH_BASE = getBhxhReferenceLevel() * MAX_BHXH_MONTHS
 
 // Tỷ lệ đóng BHXH (người lao động)
 const RATES_EMPLOYEE = {
