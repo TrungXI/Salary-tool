@@ -1,5 +1,6 @@
 'use client'
 import { type SalaryResult } from '@/lib/salary'
+import SnapshotShare from './SnapshotShare'
 
 const fmt = (n: number) => n.toLocaleString('vi-VN')
 const pct = (n: number) => n.toFixed(1) + '%'
@@ -28,6 +29,8 @@ export default function ResultPanel({ result: r, grossFromNet, locked, onUnlock 
         <MetricCard label="Tổng chi phí DN" value={fmt(r.totalCostEmployer) + 'đ'} accent={false} />
         <MetricCard label="Thuế TNCN" value={fmt(r.totalTax) + 'đ'} accent={false} sub={`Thuế suất TT: ${pct(r.effectiveTaxRate)}`} />
       </div>
+
+      <SnapshotShare result={r} />
 
       {/* Progress bar */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 20 }}>

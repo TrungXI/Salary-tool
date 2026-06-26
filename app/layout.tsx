@@ -1,20 +1,28 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import AppShell from '@/components/AppShell'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Tính Lương Gross Net 2025 | Chính xác theo luật VN | TínhLương.vn',
-  description: 'Tính lương gross sang net, net sang gross. Tính đầy đủ BHXH 8%, BHYT 1.5%, BHTN 1%, thuế TNCN lũy tiến, giảm trừ gia cảnh theo luật Việt Nam 2025.',
-  keywords: 'tính lương net, tính lương gross, thuế tncn, bhxh, giảm trừ gia cảnh, lương tối thiểu vùng 2025',
+  title: 'TínhLương.vn — Tính lương Gross/Net 2026',
+  description: 'Tính lương gross sang net, net sang gross theo luật Việt Nam 2026. Cập nhật theo NĐ 293/2025, NQ 110/2025, Luật thuế TNCN 109/2025.',
+  keywords: 'tính lương net 2026, tính lương gross 2026, thuế tncn 2026, lương tối thiểu vùng 2026',
   openGraph: {
-    title: 'Tính Lương Gross ↔ Net 2025 | Chính xác, Miễn phí',
-    description: 'Công cụ tính lương online chuẩn luật VN 2025. BHXH, thuế TNCN lũy tiến, giảm trừ gia cảnh.',
+    title: 'TínhLương.vn — Tính lương Gross ↔ Net 2026',
+    description: 'Công cụ tính lương online chuẩn luật VN 2026.',
+    type: 'website',
   },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi">
-      <body>{children}</body>
+      <body>
+        <AppShell>{children}</AppShell>
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   )
 }
