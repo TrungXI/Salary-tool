@@ -1,6 +1,7 @@
 'use client'
 import { type SalaryResult } from '@/lib/salary'
 import SnapshotShare from './SnapshotShare'
+import { useT } from '@/lib/i18n/LocaleProvider'
 
 const fmt = (n: number) => n.toLocaleString('vi-VN')
 const pct = (n: number) => n.toFixed(1) + '%'
@@ -14,6 +15,7 @@ interface Props {
 
 export default function ResultPanel({ result: r, grossFromNet, locked, onUnlock }: Props) {
   const netPct = r.gross > 0 ? (r.netSalary / r.gross * 100) : 0
+  const t = useT()
 
   return (
     <div style={{ animation: 'fadeUp 0.35s ease' }}>
@@ -24,26 +26,26 @@ export default function ResultPanel({ result: r, grossFromNet, locked, onUnlock 
 
       {/* Tóm tắt - luôn hiển thị */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
-        <MetricCard label="Lương GROSS" value={fmt(r.gross) + 'đ'} accent={false} />
-        <MetricCard label="Lương NET thực nhận" value={fmt(r.netSalary) + 'đ'} accent={true} />
-        <MetricCard label="Tổng chi phí DN" value={fmt(r.totalCostEmployer) + 'đ'} accent={false} />
-        <MetricCard label="Thuế TNCN" value={fmt(r.totalTax) + 'đ'} accent={false} sub={`Thuế suất TT: ${pct(r.effectiveTaxRate)}`} />
+        <MetricCard label={t('resultPanel.metricGross')} value={fmt(r.gross) + 'đ'} accent={false} />
+        <MetricCard label={t('resultPanel.metricNet')} value={fmt(r.netSalary) + 'đ'} accent={true} />
+        <MetricCard label={t('resultPanel.metricEmployerCost')} value={fmt(r.totalCostEmployer) + 'đ'} accent={false} />
+        <MetricCard label={t('resultPanel.metricTax')} value={fmt(r.totalTax) + 'đ'} accent={false} sub={t('resultPanel.metricTaxRate', { rate: pct(r.effectiveTaxRate) })} />
       </div>
 
       <SnapshotShare result={r} />
 
       {/* Progress bar */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 20 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: 'var(--muted)' }}>CƠ CẤU LƯƠNG GROSS</div>
+        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: 'var(--muted)' }}>{t('resultPanel.grossBreakdownHeading')}</div>
         <div style={{ display: 'flex', height: 28, borderRadius: 8, overflow: 'hidden', gap: 2, marginBottom: 12 }}>
           <BarChunk pct={r.totalInsuranceEmployee / r.gross * 100} color="#f59e0b" label="BHXH/BHYT/BHTN" />
           <BarChunk pct={r.totalTax / r.gross * 100} color="#ef4444" label="Thuế TNCN" />
-          <BarChunk pct={netPct} color="#1e6b45" label="NET nhận" />
+          <BarChunk pct={netPct} color="#1e6b45" label="NET" />
         </div>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <Legend color="#f59e0b" label={`Bảo hiểm: ${fmt(r.totalInsuranceEmployee)}đ (${pct(r.totalInsuranceEmployee/r.gross*100)})`} />
-          <Legend color="#ef4444" label={`Thuế TNCN: ${fmt(r.totalTax)}đ (${pct(r.totalTax/r.gross*100)})`} />
-          <Legend color="#1e6b45" label={`NET: ${fmt(r.netSalary)}đ (${pct(netPct)})`} />
+          <Legend color="#f59e0b" label={t('resultPanel.legendInsurance', { amount: fmt(r.totalInsuranceEmployee), pct: pct(r.totalInsuranceEmployee/r.gross*100) })} />
+          <Legend color="#ef4444" label={t('resultPanel.legendTax', { amount: fmt(r.totalTax), pct: pct(r.totalTax/r.gross*100) })} />
+          <Legend color="#1e6b45" label={t('resultPanel.legendNet', { amount: fmt(r.netSalary), pct: pct(netPct) })} />
         </div>
       </div>
 
@@ -51,70 +53,70 @@ export default function ResultPanel({ result: r, grossFromNet, locked, onUnlock 
       <div style={{ position: 'relative' }}>
         <div className={locked ? 'blur-lock' : ''}>
           {/* BHXH NLĐ */}
-          <Section title="BẢO HIỂM NGƯỜI LAO ĐỘNG ĐÓNG (10.5%)">
-            <Row label="BHXH (8%)" val={fmt(r.bhxhEmployee) + 'đ'} base={`Mức đóng: ${fmt(r.insuranceBase)}đ`} />
-            <Row label="BHYT (1.5%)" val={fmt(r.bhytEmployee) + 'đ'} />
-            <Row label="BHTN (1%)" val={fmt(r.bhtnEmployee) + 'đ'} />
-            <Row label="Tổng NLĐ đóng" val={fmt(r.totalInsuranceEmployee) + 'đ'} bold />
+          <Section title={t('resultPanel.sectionEmployeeInsurance')}>
+            <Row label={t('resultPanel.rowBhxhEmployee')} val={fmt(r.bhxhEmployee) + 'đ'} base={t('resultPanel.rowInsuranceBase', { amount: fmt(r.insuranceBase) })} />
+            <Row label={t('resultPanel.rowBhytEmployee')} val={fmt(r.bhytEmployee) + 'đ'} />
+            <Row label={t('resultPanel.rowBhtnEmployee')} val={fmt(r.bhtnEmployee) + 'đ'} />
+            <Row label={t('resultPanel.rowTotalEmployee')} val={fmt(r.totalInsuranceEmployee) + 'đ'} bold />
           </Section>
 
           {/* BHXH NSD */}
-          <Section title="BẢO HIỂM DOANH NGHIỆP ĐÓNG THÊM (21.5%)">
-            <Row label="BHXH (17.5%)" val={fmt(r.bhxhEmployer) + 'đ'} base="Bao gồm quỹ TNLĐ-BNN 0.5%" />
-            <Row label="BHYT (3%)" val={fmt(r.bhytEmployer) + 'đ'} />
-            <Row label="BHTN (1%)" val={fmt(r.bhtnEmployer) + 'đ'} />
-            <Row label="Tổng DN đóng thêm" val={fmt(r.totalInsuranceEmployer) + 'đ'} bold />
+          <Section title={t('resultPanel.sectionEmployerInsurance')}>
+            <Row label={t('resultPanel.rowBhxhEmployer')} val={fmt(r.bhxhEmployer) + 'đ'} base={t('resultPanel.rowBhxhEmployerNote')} />
+            <Row label={t('resultPanel.rowBhytEmployer')} val={fmt(r.bhytEmployer) + 'đ'} />
+            <Row label={t('resultPanel.rowBhtnEmployer')} val={fmt(r.bhtnEmployer) + 'đ'} />
+            <Row label={t('resultPanel.rowTotalEmployer')} val={fmt(r.totalInsuranceEmployer) + 'đ'} bold />
           </Section>
 
           {/* Thuế TNCN */}
-          <Section title="THUẾ THU NHẬP CÁ NHÂN (LŨY TIẾN)">
-            <Row label="Thu nhập chịu thuế" val={fmt(r.taxableIncome) + 'đ'} base="Gross − Bảo hiểm NLĐ" />
-            <Row label="Giảm trừ bản thân" val={`−${fmt(r.personalDeduction)}đ`} base="15,500,000đ/tháng" />
+          <Section title={t('resultPanel.sectionTax')}>
+            <Row label={t('resultPanel.rowTaxableIncome')} val={fmt(r.taxableIncome) + 'đ'} base={t('resultPanel.rowTaxableIncomeNote')} />
+            <Row label={t('resultPanel.rowPersonalDeduction')} val={`−${fmt(r.personalDeduction)}đ`} base={t('resultPanel.rowPersonalDeductionNote')} />
             {r.dependantDeduction > 0 && (
-              <Row label="Giảm trừ người phụ thuộc" val={`−${fmt(r.dependantDeduction)}đ`} base="6,200,000đ × người" />
+              <Row label={t('resultPanel.rowDependantDeduction')} val={`−${fmt(r.dependantDeduction)}đ`} base={t('resultPanel.rowDependantDeductionNote')} />
             )}
-            <Row label="Thu nhập tính thuế" val={fmt(r.taxableNet) + 'đ'} bold />
+            <Row label={t('resultPanel.rowTaxableNet')} val={fmt(r.taxableNet) + 'đ'} bold />
             {r.taxBreakdown.map((b, i) => (
               <Row key={i}
-                label={`Bậc ${i+1}: ${b.description} × ${(b.rate*100).toFixed(0)}%`}
+                label={t('resultPanel.rowBracketLabel', { n: i + 1, desc: b.description, rate: (b.rate * 100).toFixed(0) + '%' })}
                 val={fmt(b.tax) + 'đ'}
-                base={`Áp dụng cho: ${fmt(b.taxableAmount)}đ`}
+                base={t('resultPanel.rowBracketApplied', { amount: fmt(b.taxableAmount) })}
                 indent
               />
             ))}
-            <Row label="Tổng thuế TNCN" val={fmt(r.totalTax) + 'đ'} bold highlight />
+            <Row label={t('resultPanel.rowTotalTax')} val={fmt(r.totalTax) + 'đ'} bold highlight />
           </Section>
 
           {/* Tổng kết */}
           <div style={{ background: 'var(--accent-light)', border: '1.5px solid var(--accent)', borderRadius: 14, padding: '20px 24px', marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 14, letterSpacing: '0.05em' }}>KẾT QUẢ CUỐI CÙNG</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 14, letterSpacing: '0.05em' }}>{t('resultPanel.summaryHeading')}</div>
             {grossFromNet && (
-              <Row label="Lương Gross tương đương" val={fmt(grossFromNet) + 'đ'} bold />
+              <Row label={t('resultPanel.rowGrossEquivalent')} val={fmt(grossFromNet) + 'đ'} bold />
             )}
-            <Row label="Lương Gross" val={fmt(r.gross) + 'đ'} />
-            {r.allowances > 0 && <Row label="Phụ cấp không tính BHXH" val={`+${fmt(r.allowances)}đ`} />}
-            <Row label="Bảo hiểm NLĐ đóng" val={`−${fmt(r.totalInsuranceEmployee)}đ`} />
-            <Row label="Thuế TNCN" val={`−${fmt(r.totalTax)}đ`} />
+            <Row label={t('resultPanel.rowGross')} val={fmt(r.gross) + 'đ'} />
+            {r.allowances > 0 && <Row label={t('resultPanel.rowAllowance')} val={`+${fmt(r.allowances)}đ`} />}
+            <Row label={t('resultPanel.rowInsurancePaid')} val={`−${fmt(r.totalInsuranceEmployee)}đ`} />
+            <Row label={t('resultPanel.rowTaxPaid')} val={`−${fmt(r.totalTax)}đ`} />
             <div style={{ borderTop: '1.5px solid var(--accent)', marginTop: 12, paddingTop: 12 }}>
-              <Row label="NET THỰC NHẬN" val={fmt(r.netSalary) + 'đ'} bold big accent />
+              <Row label={t('resultPanel.rowNetTotal')} val={fmt(r.netSalary) + 'đ'} bold big accent />
             </div>
             <div style={{ borderTop: '1px solid var(--border)', marginTop: 10, paddingTop: 10 }}>
-              <Row label="Tổng chi phí doanh nghiệp" val={fmt(r.totalCostEmployer) + 'đ'} bold />
+              <Row label={t('resultPanel.rowEmployerTotal')} val={fmt(r.totalCostEmployer) + 'đ'} bold />
             </div>
           </div>
 
           {/* Affiliate CTA */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Tự động hóa tính lương hàng tháng?</div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>{t('resultPanel.affiliateTitle')}</div>
             <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 12px', lineHeight: 1.5 }}>
-              Đang tính lương cho nhiều nhân viên? Phần mềm HRM sẽ tính tự động, xuất phiếu lương, nhắc deadline đóng BHXH.
+              {t('resultPanel.affiliateDesc')}
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <a href="https://www.misa.vn/phan-mem/misa-amis-hrm/?ref=tinhluong" target="_blank" rel="noopener" style={ctaBtn('#1e6b45', 'white')}>
-                Dùng thử MISA HRM →
+                {t('resultPanel.affiliateMisa')}
               </a>
               <a href="https://www.base.vn/?ref=tinhluong" target="_blank" rel="noopener" style={ctaBtn('var(--surface2)', 'var(--text)')}>
-                Xem Base.vn
+                {t('resultPanel.affiliateBase')}
               </a>
             </div>
           </div>
@@ -131,18 +133,18 @@ export default function ResultPanel({ result: r, grossFromNet, locked, onUnlock 
               padding: '28px 32px', textAlign: 'center', maxWidth: 380, width: '90%',
             }}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>📊</div>
-              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Xem báo cáo đầy đủ</div>
+              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{t('resultPanel.lockTitle')}</div>
               <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.6, margin: '0 0 20px' }}>
-                Nhập email để xem chi tiết từng bậc thuế, BHXH, tổng chi phí doanh nghiệp, và nhận bảng tính lương Excel miễn phí.
+                {t('resultPanel.lockDesc')}
               </p>
               <button onClick={onUnlock} style={{
                 width: '100%', padding: '12px', border: 'none', borderRadius: 10,
                 background: 'var(--accent)', color: 'white', fontSize: 15, fontWeight: 700, cursor: 'pointer',
               }}>
-                Nhận báo cáo miễn phí →
+                {t('resultPanel.lockCta')}
               </button>
               <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 10 }}>
-                Không spam. Hủy bất cứ lúc nào.
+                {t('resultPanel.lockNote')}
               </div>
             </div>
           </div>

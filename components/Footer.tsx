@@ -1,15 +1,19 @@
+'use client'
 import Link from 'next/link'
 import { LEGAL_REFS } from '@/lib/legalRefs'
+import { useT, useLocalizedHref } from '@/lib/i18n/LocaleProvider'
 
-const NAV_LINKS = [
-  { href: '/', label: 'Trang chủ' },
-  { href: '/bac-thue-tncn', label: 'Bậc thuế TNCN' },
-  { href: '/luong-toi-thieu-vung', label: 'Lương tối thiểu vùng' },
-  { href: '/so-sanh-luat', label: 'So sánh luật' },
-  { href: '/huong-dan-bhxh', label: 'Hướng dẫn BHXH' },
+const NAV_LINKS: { href: string; key: string }[] = [
+  { href: '/', key: 'footer.nav.home' },
+  { href: '/bac-thue-tncn', key: 'footer.nav.taxBrackets' },
+  { href: '/luong-toi-thieu-vung', key: 'footer.nav.minWage' },
+  { href: '/so-sanh-luat', key: 'footer.nav.lawCompare' },
+  { href: '/huong-dan-bhxh', key: 'footer.nav.bhxhGuide' },
 ]
 
 export default function Footer() {
+  const t = useT()
+  const localize = useLocalizedHref()
   return (
     <footer style={{
       borderTop: '1px solid var(--border)',
@@ -24,25 +28,25 @@ export default function Footer() {
       color: 'var(--muted)',
     }}>
       <div style={{ minWidth: 200 }}>
-        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>© 2026 TínhLương.vn</div>
-        <div style={{ lineHeight: 1.5 }}>Công cụ tính lương chính xác theo luật Việt Nam.</div>
+        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>{t('footer.copyright')}</div>
+        <div style={{ lineHeight: 1.5 }}>{t('footer.tagline')}</div>
       </div>
 
       <div>
-        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Trang</div>
+        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>{t('footer.pagesHeading')}</div>
         {NAV_LINKS.map(l => (
           <Link
             key={l.href}
-            href={l.href}
+            href={localize(l.href)}
             style={{ color: 'var(--text)', textDecoration: 'none', display: 'block', padding: '2px 0' }}
           >
-            {l.label}
+            {t(l.key)}
           </Link>
         ))}
       </div>
 
       <div>
-        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Cơ sở pháp lý</div>
+        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>{t('footer.legalHeading')}</div>
         {LEGAL_REFS.map(ref => (
           <a
             key={ref.code}

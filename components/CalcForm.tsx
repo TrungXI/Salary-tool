@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { calculateSalary, calcGrossFromNet, REGION_NAMES, MIN_WAGES, type SalaryResult, type Region } from '@/lib/salary'
 import ResultPanel from './ResultPanel'
 import EmailGate from './EmailGate'
+import { useT } from '@/lib/i18n/LocaleProvider'
 
 const fmtInput = (raw: string) => {
   const n = raw.replace(/[^\d]/g, '')
@@ -38,6 +39,7 @@ export default function CalcForm({
   const [emailUnlocked, setEmailUnlocked] = useState(false)
   const [showGate, setShowGate] = useState(false)
   const [error, setError] = useState('')
+  const t = useT()
 
   // Pre-compute result if initialGross is supplied (SEO landing pages).
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function CalcForm({
 
   const handleCalc = () => {
     const salaryVal = parseInput(salary)
-    if (!salaryVal || salaryVal <= 0) { setError('Vui lòng nhập mức lương hợp lệ'); return }
+    if (!salaryVal || salaryVal <= 0) { setError(t('calcForm.errorInvalidSalary')); return }
     setError('')
     const r = parseInt(region) as Region
     const dep = parseInt(dependants)
@@ -80,10 +82,13 @@ export default function CalcForm({
     <>
       {/* Mode toggle */}
       <div style={{ display: 'flex', background: 'var(--surface2)', borderRadius: 12, padding: 4, maxWidth: 380, margin: '0 auto 28px' }}>
-        {[{ v: 'gross_to_net', l: 'Gross → Net' }, { v: 'net_to_gross', l: 'Net → Gross' }].map(m => (
+        {[
+          { v: 'gross_to_net' as const, l: t('calcForm.modeGrossToNet') },
+          { v: 'net_to_gross' as const, l: t('calcForm.modeNetToGross') },
+        ].map(m => (
           <button
             key={m.v}
-            onClick={() => { setMode(m.v as typeof mode); setResult(null) }}
+            onClick={() => { setMode(m.v); setResult(null) }}
             style={{
               flex: 1, padding: '9px 0', border: 'none', borderRadius: 9, cursor: 'pointer', fontSize: 14,
               fontWeight: mode === m.v ? 700 : 400,
@@ -102,38 +107,42 @@ export default function CalcForm({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
 
           <div>
-            <label style={L}>{mode === 'gross_to_net' ? 'Lương Gross (đồng/tháng)' : 'Lương Net mong muốn (đồng)'}</label>
+            <label style={L}>{mode === 'gross_to_net' ? t('calcForm.labelSalaryGross') : t('calcForm.labelSalaryNet')}</label>
             <input placeholder="VD: 15,000,000" value={salary} onChange={e => setSalary(fmtInput(e.target.value))} />
-            <div style={H}>Lương tối thiểu vùng: {minW.toLocaleString('vi-VN')}đ</div>
+            <div style={H}>{t('calcForm.minWageHint', { amount: minW.toLocaleString('vi-VN') })}</div>
           </div>
 
           <div>
-            <label style={L}>Vùng lương tối thiểu</label>
+            <label style={L}>{t('calcForm.labelRegion')}</label>
             <select value={region} onChange={e => setRegion(e.target.value)}>
               {([1, 2, 3, 4] as Region[]).map(r => <option key={r} value={r}>{REGION_NAMES[r]}</option>)}
             </select>
           </div>
 
           <div>
-            <label style={L}>Số người phụ thuộc</label>
+            <label style={L}>{t('calcForm.labelDependants')}</label>
             <select value={dependants} onChange={e => setDependants(e.target.value)}>
               {[0, 1, 2, 3, 4, 5].map(n => (
-                <option key={n} value={n}>{n === 0 ? 'Không có' : `${n} người (−${(n * 6200000).toLocaleString('vi-VN')}đ)`}</option>
+                <option key={n} value={n}>
+                  {n === 0
+                    ? t('calcForm.dependantsNone')
+                    : t('calcForm.dependantsHint', { count: n, amount: (n * 6200000).toLocaleString('vi-VN') })}
+                </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label style={L}>Phụ cấp không tính BHXH (đồng)</label>
+            <label style={L}>{t('calcForm.labelAllowances')}</label>
             <input placeholder="VD: 1,000,000" value={allowances} onChange={e => setAllowances(fmtInput(e.target.value))} />
-            <div style={H}>Xăng xe, điện thoại, ăn ca...</div>
+            <div style={H}>{t('calcForm.allowancesHint')}</div>
           </div>
 
           <div>
-            <label style={L}>Loại hợp đồng</label>
+            <label style={L}>{t('calcForm.labelEmpType')}</label>
             <select value={empType} onChange={e => setEmpType(e.target.value as 'full' | 'probation')}>
-              <option value="full">Chính thức (đóng đủ BHXH)</option>
-              <option value="probation">Thử việc (chỉ đóng BHYT)</option>
+              <option value="full">{t('calcForm.empTypeFull')}</option>
+              <option value="probation">{t('calcForm.empTypeProbation')}</option>
             </select>
           </div>
         </div>
@@ -148,7 +157,7 @@ export default function CalcForm({
             fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.01em',
           }}
         >
-          Tính lương ngay →
+          {t('calcForm.submit')}
         </button>
       </div>
 

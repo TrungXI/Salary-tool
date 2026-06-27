@@ -30,7 +30,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 
 :root {
   --header-h: 56px;
-  --sidebar-w: 220px;
+  --sidebar-w: 256px;
   --max-content: 980px;
 }
 
@@ -38,4 +38,18 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   :root {
     --sidebar-w: 0px;
   }
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f0e;
+  --surface: #1a1a18;
+  --surface2: #242422;
+  --border: #2e2e2c;
+  --text: #f0ede8;
+  --muted: #8b8a86;
+  --accent: #3dba78;
+  --accent-light: #0d2b1a;
+  --accent-mid: #2d8a5a;
+  --warn: #f59e0b;
+  --warn-light: #1c1400;
 }

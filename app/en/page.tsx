@@ -2,8 +2,8 @@ import CalcForm from '@/components/CalcForm'
 import ExitIntent from '@/components/ExitIntent'
 import { getDictionary } from '@/lib/i18n/dictionary'
 
-export default function Home() {
-  const d = getDictionary('vi').home
+export default function HomeEn() {
+  const d = getDictionary('en').home
   const benefits = [
     { icon: '📋', t: d.benefits.updateTitle, desc: d.benefits.updateDesc },
     { icon: '🔒', t: d.benefits.secureTitle, desc: d.benefits.secureDesc },
